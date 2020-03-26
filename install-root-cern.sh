@@ -55,7 +55,7 @@ install_deps() {
 
 fetch_src() {
     echo "$SNAME checking for latest ROOT version"
-    ROOT_VER_LATEST=$(wget -qO- $ROOT_URL_DL_LIST | grep -Eo \"root_v[0-9]+\.[0-9]+\.[0-9]+\.source\.tar\.gz\" | uniq | tr -d '"' | tail -n 1)
+    ROOT_VER_LATEST=$(wget -qO- $ROOT_URL_DL_LIST | grep -Eo \"root_v[0-9]+\.[0-9]+\.[0-9]+\.source\.tar\.gz\" | uniq | tr -d '"' | sort -V | tail -n 1)
     echo "$SNAME latest ROOT version: $ROOT_VER_LATEST"
     URL_DL=$ROOT_URL_DL_BASE$ROOT_VER_LATEST
     echo "Downloading ROOT from $URL_DL"
