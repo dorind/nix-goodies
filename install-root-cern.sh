@@ -33,22 +33,18 @@
 # homepage: https://root.cern.ch
 #
 
-CURRENT_USER=""
-
-if [ $SUDO_USER ]; then 
-    CURRENT_USER=$SUDO_USER
-else 
-    CURRENT_USER=$(whoami)
-fi
+CURRENT_USER=${SUDO_USER:-$(whoami)}
+DIR_INIT=$(pwd)
+CLEANUP_LIST=""
 
 SNAME=$(basename $0)
 ROOT_URL_DL_BASE="https://root.cern.ch/download/"
 ROOT_URL_DL_LIST=$ROOT_URL_DL_BASE
-ROOT_VER_LATEST=""
+ROOT_VER_LATEST="root"
 
 install_deps() {
     echo "$SNAME installing dependencies..."
-    apt-get install -y wget build-essential manpages-dev llvm cmake \
+    apt-get install -y wget git build-essential manpages-dev llvm cmake \
         libx11-dev libxpm-dev libxft-dev libxext-dev libtiff5-dev \
         libgif-dev libgsl-dev libpython-dev libkrb5-dev libxml2-dev \
         libssl-dev default-libmysqlclient-dev libpq-dev libqt4-opengl-dev \
@@ -67,21 +63,19 @@ fetch_src() {
     sudo -u $CURRENT_USER wget $URL_DL &&
     # extract sources
     echo "$SNAME extracting sources..." &&
+    CLEANUP_LIST="$CLEANUP_LIST $ROOT_VER_LATEST" &&
     sudo -u $CURRENT_USER tar -zxf $ROOT_VER_LATEST &&
     # switch to build dir
     cd root*/build
 }
 
-build() {
+make_install() {
     # configure
     echo "$SNAME configuring..." &&
-    cmake ../ -DCMAKE_INSTALL_PREFIX=/usr/opt/root -Dgnuinstall=ON &&
+    sudo -u $CURRENT_USER cmake ../ -DCMAKE_INSTALL_PREFIX=/usr/opt/root -Dgnuinstall=ON &&
     # build
     echo "$SNAME building..." &&
-    make -j$(nproc)
-}
-
-make_install() {
+    sudo -u $CURRENT_USER make -j$(nproc) &&
     # install
     echo "$SNAME installing..." &&
     make install &&
@@ -108,14 +102,21 @@ exports() {
     . $SHRC
 }
 
+cleanup() {
+    cd $DIR_INIT
+    if ! [ "$1" = "--cleanup" ]; then exit 0; fi
+    echo "cleaning up: $CLEANUP_LIST"
+    rm -rf $CLEANUP_LIST
+}
+
 install_root() {
     install_deps &&
     fetch_src &&
-    build &&
     make_install &&
     exports
 }
 
-install_root
+install_root &&
+cleanup $@
 
 

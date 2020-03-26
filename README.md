@@ -1,6 +1,8 @@
 # nix-goodies
 collection of scripts for nix systems
 
+for install scripts pass `--cleanup` as first arg to remove sources
+
 
 ### install-checkinstall.sh
 
@@ -14,6 +16,42 @@ $ sudo ./install-checkinstall.sh
 * Requires minimal user interaction
 * Fast installation
 
+### install-lz4.sh
+
+download & install latest version of lz4 from source
+
+```shell
+$ sudo ./install-lz4.sh
+```
+
+* Tested on Debian 10
+* Doesn't require user interaction
+* Fast installation
+
+### install-proio-cpp.sh
+
+download & install latest version of proio for cpp
+
+```shell
+$ sudo ./install-proio-cpp.sh
+```
+
+* Tested on Debian 10
+* Doesn't require user interaction
+* Fast installation
+* Requires lz4(install-lz4.sh) and protobuf(install-protobuf.sh) to be installed
+
+### install-protobuf.sh
+
+download & install latest version of protobuf
+
+```shell
+$ sudo ./install-protobuf.sh
+```
+
+* Tested on Debian 10
+* Doesn't require user interaction
+* Slow installation, run it and walk away
 
 ### install-root-cern.sh
 

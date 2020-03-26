@@ -30,27 +30,36 @@
 #
 
 #
-# homepage: https://asic-linux.com.mx
+# homepage: https://developers.google.com/protocol-buffers/ https://github.com/protocolbuffers/protobuf
 #
 
 CURRENT_USER=${SUDO_USER:-$(whoami)}
 DIR_INIT=$(pwd)
-CLEANUP_LIST="checkinstall"
+CLEANUP_LIST=""
 
 install_deps() {
-    apt-get install -y git make gettext dpkg dpkg-dev
+    apt-get install -y git wget autoconf automake libtool curl make g++ unzip zlib1g zlib1g-dev
 }
 
 fetch_src() {
-    sudo -u $CURRENT_USER git clone http://checkinstall.izto.org/checkinstall.git checkinstall &&
-    cd ./checkinstall
+    URL_PATH=$(wget -qO- https://github.com/protocolbuffers/protobuf/releases/latest | grep -Eo \"\/protocolbuffers\/protobuf\/releases\/download\/v[0-9]+\.[0-9]+\.[0-9]+\/protobuf\-all\-[0-9]+\.[0-9]+\.[0-9]+\.tar\.gz\" | tr -d '"')
+    URL_DL="https://www.github.com$URL_PATH"
+    NAME=$(basename $URL_PATH)
+    CLEANUP_LIST="$CLEANUP_LIST $NAME"
+    sudo -u $CURRENT_USER wget $URL_DL &&
+    sudo -u $CURRENT_USER tar -zxf $NAME &&
+    DIR_NAME=$(basename $(tar -tf $NAME | head -n 1)) &&
+    CLEANUP_LIST="$CLEANUP_LIST $DIR_NAME" &&
+    cd $DIR_NAME
 }
 
 make_install() {
-    sudo -u $CURRENT_USER make &&
+    sudo -u $CURRENT_USER ./autogen.sh &&
+    sudo -u $CURRENT_USER ./configure --with-system-zlib &&
+    sudo -u $CURRENT_USER make -j$(nproc) &&
+    sudo -u $CURRENT_USER make check -j$(nproc) &&
     make install &&
-    checkinstall &&
-    dpkg -i checkinstall_*.deb
+    ldconfig
 }
 
 cleanup() {
@@ -60,13 +69,13 @@ cleanup() {
     rm -rf $CLEANUP_LIST
 }
 
-install_checkinstall() {
+install_protobuf() {
     install_deps &&
     fetch_src &&
     make_install
 }
 
-install_checkinstall &&
+install_protobuf &&
 cleanup $@
 
 

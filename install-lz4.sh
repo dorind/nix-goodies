@@ -30,27 +30,25 @@
 #
 
 #
-# homepage: https://asic-linux.com.mx
+# homepage: http://www.lz4.org https://github.com/lz4/lz4
 #
 
 CURRENT_USER=${SUDO_USER:-$(whoami)}
 DIR_INIT=$(pwd)
-CLEANUP_LIST="checkinstall"
+CLEANUP_LIST="lz4"
 
 install_deps() {
-    apt-get install -y git make gettext dpkg dpkg-dev
+    apt-get install -y build-essential git make cmake
 }
 
 fetch_src() {
-    sudo -u $CURRENT_USER git clone http://checkinstall.izto.org/checkinstall.git checkinstall &&
-    cd ./checkinstall
+    sudo -u $CURRENT_USER git clone https://github.com/lz4/lz4.git lz4 && 
+    cd lz4
 }
 
-make_install() {
-    sudo -u $CURRENT_USER make &&
-    make install &&
-    checkinstall &&
-    dpkg -i checkinstall_*.deb
+build_install() {
+    sudo -u $CURRENT_USER make cmake -j$(nproc) &&
+    cmake --build contrib/cmake_unofficial/. -- install
 }
 
 cleanup() {
@@ -60,13 +58,13 @@ cleanup() {
     rm -rf $CLEANUP_LIST
 }
 
-install_checkinstall() {
+install_lz4() {
     install_deps &&
     fetch_src &&
-    make_install
+    build_install
 }
 
-install_checkinstall &&
+install_lz4 &&
 cleanup $@
 
 

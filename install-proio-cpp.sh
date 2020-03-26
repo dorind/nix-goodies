@@ -30,27 +30,32 @@
 #
 
 #
-# homepage: https://asic-linux.com.mx
+# homepage: https://github.com/proio-org/proio
 #
 
 CURRENT_USER=${SUDO_USER:-$(whoami)}
 DIR_INIT=$(pwd)
-CLEANUP_LIST="checkinstall"
+CLEANUP_LIST="proio-cpp"
 
 install_deps() {
-    apt-get install -y git make gettext dpkg dpkg-dev
+    apt-get install -y git make cmake
 }
 
 fetch_src() {
-    sudo -u $CURRENT_USER git clone http://checkinstall.izto.org/checkinstall.git checkinstall &&
-    cd ./checkinstall
+    sudo -u $CURRENT_USER git clone https://github.com/proio-org/cpp-proio.git proio-cpp &&
+    cd ./proio-cpp &&
+    git submodule init && 
+    git submodule update
 }
 
 make_install() {
-    sudo -u $CURRENT_USER make &&
+    sudo -u $CURRENT_USER mkdir build && 
+    cd build && 
+    sudo -u $CURRENT_USER cmake ../ && 
+    sudo -u $CURRENT_USER make -j$(nproc) && 
+    sudo -u $CURRENT_USER make test -j$(nproc) && 
     make install &&
-    checkinstall &&
-    dpkg -i checkinstall_*.deb
+    ldconfig
 }
 
 cleanup() {
@@ -60,13 +65,13 @@ cleanup() {
     rm -rf $CLEANUP_LIST
 }
 
-install_checkinstall() {
+install_proio_cpp() {
     install_deps &&
     fetch_src &&
     make_install
 }
 
-install_checkinstall &&
+install_proio_cpp &&
 cleanup $@
 
 
