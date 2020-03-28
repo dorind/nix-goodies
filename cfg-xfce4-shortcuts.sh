@@ -32,7 +32,7 @@
 #
 # shortcut              action
 #
-# SUPER-E               show desktop
+# SUPER-D               show desktop
 # SHIFT-SUPER-DOWN      tile windows down 
 # SHIFT-SUPER-UP        tile windows up
 # SUPER-1               workspace 1

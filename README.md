@@ -13,7 +13,7 @@ $ ./cfg-xfce4-shortcuts.sh
 
 |shortcut|action|
 |---|---|
-|SUPER-E               |show desktop|
+|SUPER-D               |show desktop|
 |SHIFT-SUPER-DOWN      |tile windows down|
 |SHIFT-SUPER-UP        |tile windows up|
 |SUPER-1               |workspace 1|
@@ -42,6 +42,17 @@ $ sudo ./install-checkinstall.sh
 * Requires minimal user interaction
 * Fast installation
 
+### install-golang.sh
+download & install latest version of golang
+
+```shell
+$ sudo ./install-golang.sh
+```
+
+* Tested on Debian 10
+* Doesn't require user interaction
+* Fast installation
+
 ### install-lz4.sh
 download & install latest version of lz4 from source
 
@@ -63,7 +74,7 @@ $ sudo ./install-proio-cpp.sh
 * Tested on Debian 10
 * Doesn't require user interaction
 * Fast installation
-* Requires lz4(install-lz4.sh) and protobuf(install-protobuf.sh) to be installed
+* Requires lz4(`install-lz4.sh`) and protobuf(`install-protobuf.sh`) to be installed
 
 ### install-protobuf.sh
 download & install latest version of protobuf
