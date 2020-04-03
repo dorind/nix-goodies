@@ -30,33 +30,46 @@
 #
 
 #
-# homepage: https://golang.org/
+# homepage: http://liteide.org/en/ https://github.com/visualfc/liteide
 #
 
 CURRENT_USER=${SUDO_USER:-$(whoami)}
 DIR_INIT=$(pwd)
 CLEANUP_LIST=""
-
-SNAME=$(basename $0)
-GOLANG_URL_DL="https://golang.org/dl/"
-GOLANG_INSTALL_LOCATION="/usr/local"
+LITEIDE_INSTALL_LOCATION="/usr/local"
+LITEIDE_INSTALL_BIN=""
+ICON_PATH="/usr/share/icons/hicolor/scalable/apps/liteide.svg"
+ICON_REMOTE="https://raw.githubusercontent.com/dorind/nix-goodies/master/res/icons/liteide.svg"
 
 install_deps() {
-    echo "$SNAME installing dependencies..."
-    apt-get install -y wget
+    apt-get install -y wget qt5-default
 }
 
 fetch_install() {
-    echo "$SNAME checking for latest golang version"
-    URL_DL=$(wget -qO- https://golang.org/dl/ | grep -Eo \"https*\:*\/\/.*go[0-9]*\.[0-9]*\.[0-9]*\.linux-amd64\.tar\.gz\" | tr -d '"' | head -n 1)
-    GOLANG_VER_LATEST=$(basename $URL_DL)
-    echo "Downloading $GOLANG_VER_LATEST from from $URL_DL"
-    # download
+    URL_PATH=$(wget -qO- https://github.com/visualfc/liteide/releases/latest | grep -Eo \"\/visualfc\/liteide\/releases\/download\/x[0-9]+\.[0-9]\/liteidex[0-9]+\.[0-9]\.linux64\-qt5\.[0-9]+\.[0-9]+\.tar\.gz\" | tr -d '"')
+    URL_DL="https://www.github.com$URL_PATH"
+    NAME=$(basename $URL_PATH)
+    CLEANUP_LIST="$NAME"
     sudo -u $CURRENT_USER wget $URL_DL &&
-    # extract sources
-    echo "$SNAME extracting $GOLANG_VER_LATEST to $GOLANG_INSTALL_LOCATION" &&
-    CLEANUP_LIST="$GOLANG_VER_LATEST" &&
-    tar -C $GOLANG_INSTALL_LOCATION -xzf $GOLANG_VER_LATEST
+    tar -C $LITEIDE_INSTALL_LOCATION -xzf $NAME &&
+    LITEIDE_INSTALL_BIN=$LITEIDE_INSTALL_LOCATION/liteide/bin
+}
+
+setup_app() {
+    FDESK="/usr/local/share/applications" &&
+    mkdir -p $FDESK &&
+    FDESK="$FDESK/liteide.desktop"
+    wget -O $ICON_PATH $ICON_REMOTE || true
+    echo "[Desktop Entry]" >> $FDESK
+    echo "Name=LiteIDE" >> $FDESK
+    echo "Comment=Code Editing" >> $FDESK
+    echo "GenericName=Text Editor" >> $FDESK
+    echo "Exec=$LITEIDE_INSTALL_BIN/liteide" >> $FDESK
+    echo "Icon=$ICON_PATH" >> $FDESK
+    echo "Type=Application" >> $FDESK
+    echo "StartupNotify=false" >> $FDESK
+    echo "Categories=Utility;TextEditor;Development;IDE;" >> $FDESK
+    echo "Keywords=liteide;" >> $FDESK
 }
 
 exports() {
@@ -71,8 +84,8 @@ exports() {
     fi
     # export paths
     echo "" >> $SHRC
-    echo "# golang" >> $SHRC
-    echo "export PATH=\$PATH:$GOLANG_INSTALL_LOCATION/go/bin" >> $SHRC
+    echo "# liteide" >> $SHRC
+    echo "export PATH=\$PATH:$LITEIDE_INSTALL_BIN" >> $SHRC
     echo "" >> $SHRC
     echo "$SNAME reloading $SHRC"
     su $CURRENT_USER
@@ -86,13 +99,14 @@ cleanup() {
     rm -rf $CLEANUP_LIST
 }
 
-install_golang() {
+install_liteide() {
     install_deps &&
     fetch_install &&
     cleanup $@ &&
+    setup_app &&
     exports
 }
 
-install_golang $@
+install_liteide $@
 
 

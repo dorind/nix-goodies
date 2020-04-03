@@ -53,6 +53,18 @@ $ sudo ./install-golang.sh
 * Doesn't require user interaction
 * Fast installation
 
+### install-liteide.sh
+download & install latest version of LiteIDE
+
+```shell
+$ sudo ./install-liteide.sh
+```
+
+* Tested on Debian 10
+* Doesn't require user interaction
+* Fast installation
+* Includes `.desktop` file and icon
+
 ### install-lz4.sh
 download & install latest version of lz4 from source
 
