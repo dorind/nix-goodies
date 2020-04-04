@@ -3,6 +3,23 @@ collection of scripts for nix systems
 
 for install scripts pass `--cleanup` as first arg to remove sources
 
+### xfce4 config all
+calls all cfg-xfce4-* scripts one by one
+
+```shell
+$ ./cfg-xfce4-all.sh
+```
+
+### xfce4 panel and plugins
+configure xfce4 to use a top panel and it's plugins
+
+```shell
+$ ./cfg-xfce4-panel-plugins.sh
+```
+
+* Tested on Debian 10, should work on any distro
+* Super fast
+
 ### xfce4 shortcuts
 configure xfce4 productivity shortcuts
 
@@ -30,6 +47,29 @@ $ ./cfg-xfce4-shortcuts.sh
 |SHIFT-CTRL-ALT-!      |flameshot capture screenshot|
 |SHIFT-CTRL-ALT-$      |flameshot gui mode|
 |SHIFT-CTRL-ESC        |gnome system monitor|
+
+* Tested on Debian 10, should work on any distro
+* Super fast
+
+### xfce4 theme and icons
+
+**Note** you should run `install-xfce-themes.sh` first
+
+```shell
+$ ./cfg-xfce4-theme-wm.sh
+```
+
+* Tested on Debian 10, should work on any distro
+* Super fast
+
+### xfce4 thunar custom config
+
+```shell
+$ ./cfg-xfce4-thunar.sh
+```
+
+* Tested on Debian 10, should work on any distro
+* Super fast
 
 ### install-checkinstall.sh
 download & install latest version of checkinstall from source
@@ -109,6 +149,18 @@ $ sudo ./install-root-cern.sh
 * Tested on Debian 10
 * Doesn't require user interaction
 * Slow installation, run it and walk away
+
+
+### install-xfce4-themes.sh
+download & install **my** prefered themes and icons
+
+```shell
+$ sudo ./install-xfce4-themes.sh
+```
+
+* Tested on Debian 10
+* Doesn't require user interaction
+* Fast installation
 
 ### mktmpfs.sh
 create, remove, save & load a temporary file system
