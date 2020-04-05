@@ -1,0 +1,54 @@
+" do your thing
+set nocompatible
+
+" always show status and full path
+set laststatus=2
+set statusline+=%F
+
+" useful
+set title
+set titlestring=%{hostname()}\ \ %F
+
+" syntax highlight
+syntax on
+
+" enable line numbers and relative line numbers for jumps and gotos
+set number relativenumber
+
+" don't even think about it!
+set visualbell
+
+" yes
+set encoding=utf-8
+
+" because why not?
+set wrap
+
+" search
+set hlsearch
+set ignorecase
+
+" tabs
+set tabstop=4
+set softtabstop=0 noexpandtab
+set shiftwidth=4
+set expandtab
+
+" reload last position
+if has("autocmd")
+  au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+endif
+
+" toggle relative line number CTRL-L twice
+nmap <C-L><C-L> :set invrelativenumber<CR> 
+
+" toggle current line highlight CTRL-H twice
+set cursorline
+:hi CursorLine cterm=NONE ctermbg=darkred ctermfg=white
+nmap <C-H><C-H> :set invcursorline<CR>
+
+" his unsets the "last search pattern" register by hitting return
+nnoremap <CR> :noh<CR><CR>
+
+
+

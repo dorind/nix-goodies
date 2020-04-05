@@ -3,6 +3,9 @@ collection of scripts for nix systems
 
 for install scripts pass `--cleanup` as first arg to remove sources
 
+* `rc` directory contains various configuration files
+* `res` directory contains resource files
+
 ### xfce4 config all
 calls all cfg-xfce4-* scripts one by one
 
@@ -115,6 +118,17 @@ $ sudo ./install-lz4.sh
 * Tested on Debian 10
 * Doesn't require user interaction
 * Fast installation
+
+### install-opencv.sh
+download & install latest version of opencv and opencv-contrib from source
+
+```shell
+$ sudo ./install-opencv.sh
+```
+
+* Tested on Debian 10
+* Doesn't require user interaction
+* Slow installation, run it and walk away
 
 ### install-proio-cpp.sh
 download & install latest version of proio for cpp
