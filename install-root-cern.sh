@@ -36,21 +36,22 @@
 CURRENT_USER=${SUDO_USER:-$(whoami)}
 DIR_INIT=$(pwd)
 CLEANUP_LIST=""
-
 SNAME=$(basename $0)
 ROOT_URL_DL_BASE="https://root.cern.ch/download/"
 ROOT_URL_DL_LIST=$ROOT_URL_DL_BASE
 ROOT_VER_LATEST="root"
 
+PKG_DEB="wget git build-essential manpages-dev llvm cmake"
+PKG_DEB="$PKG_DEB libx11-dev libxpm-dev libxft-dev libxext-dev libtiff5-dev"
+PKG_DEB="$PKG_DEB libgif-dev libgsl-dev libpython-dev libkrb5-dev libxml2-dev"
+PKG_DEB="$PKG_DEB libssl-dev default-libmysqlclient-dev libpq-dev libqt4-opengl-dev"
+PKG_DEB="$PKG_DEB libgl2ps-dev libpcre-ocaml-dev libgraphviz-dev libdpm-dev"
+PKG_DEB="$PKG_DEB unixodbc-dev libsqlite3-dev libfftw3-dev libcfitsio-dev dcap-dev"
+PKG_DEB="$PKG_DEB libldap2-dev libavahi-compat-libdnssd-dev"
+
 install_deps() {
-    echo "$SNAME installing dependencies..."
-    apt-get install -y wget git build-essential manpages-dev llvm cmake \
-        libx11-dev libxpm-dev libxft-dev libxext-dev libtiff5-dev \
-        libgif-dev libgsl-dev libpython-dev libkrb5-dev libxml2-dev \
-        libssl-dev default-libmysqlclient-dev libpq-dev libqt4-opengl-dev \
-        libgl2ps-dev libpcre-ocaml-dev libgraphviz-dev libdpm-dev \
-        unixodbc-dev libsqlite3-dev libfftw3-dev libcfitsio-dev dcap-dev \
-        libldap2-dev libavahi-compat-libdnssd-dev
+    echo "$SNAME installing dependencies: $PKG_DEB"
+    apt-get install -y $PKG_DEB
 }
 
 fetch_src() {
@@ -61,26 +62,26 @@ fetch_src() {
     echo "Downloading ROOT from $URL_DL"
     # download
     sudo -u $CURRENT_USER wget $URL_DL &&
-    # extract sources
-    echo "$SNAME extracting sources..." &&
-    CLEANUP_LIST="$CLEANUP_LIST $ROOT_VER_LATEST" &&
-    sudo -u $CURRENT_USER tar -zxf $ROOT_VER_LATEST &&
-    # switch to build dir
-    cd root*/build
+        # extract sources
+        echo "$SNAME extracting sources..." &&
+        CLEANUP_LIST="$CLEANUP_LIST $ROOT_VER_LATEST" &&
+        sudo -u $CURRENT_USER tar -zxf $ROOT_VER_LATEST &&
+        # switch to build dir
+        cd root*/build
 }
 
 make_install() {
     # configure
-    echo "$SNAME configuring..." &&
+    echo "$SNAME configuring..."
     sudo -u $CURRENT_USER cmake ../ -DCMAKE_INSTALL_PREFIX=/usr/opt/root -Dgnuinstall=ON &&
-    # build
-    echo "$SNAME building..." &&
-    sudo -u $CURRENT_USER make -j$(nproc) &&
-    # install
-    echo "$SNAME installing..." &&
-    make install &&
-    # refresh dynamic linker
-    ldconfig
+        # build
+        echo "$SNAME building..." &&
+        sudo -u $CURRENT_USER make -j$(nproc) &&
+        # install
+        echo "$SNAME installing..." &&
+        make install &&
+        # refresh dynamic linker
+        ldconfig
 }
 
 exports() {
@@ -93,6 +94,7 @@ exports() {
         echo "$SNAME unhandled case, bailing out!"
         exit 1
     fi
+    echo "$SNAME adding ROOT to your PATH in $SHRC"
     # export paths
     echo "export ROOTSYS=/usr/opt/root" >> $SHRC
     echo "export PATH=\$PATH:\$ROOTSYS/bin" >> $SHRC
@@ -111,12 +113,19 @@ cleanup() {
 
 install_root() {
     install_deps &&
-    fetch_src &&
-    make_install &&
-    exports
+        fetch_src &&
+        make_install &&
+        exports &&
+        cleanup $@
 }
 
-install_root &&
-cleanup $@
+for s in "$@"
+do
+    case $s in
+        "--PKG_DEB") echo $PKG_DEB; exit 0;;
+    esac
+done
+
+install_root $@
 
 

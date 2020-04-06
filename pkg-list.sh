@@ -29,62 +29,31 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-#
-# homepage: https://github.com/proio-org/proio
-#
-
-CURRENT_USER=${SUDO_USER:-$(whoami)}
-DIR_INIT=$(pwd)
-CLEANUP_LIST="proio-cpp"
-SNAME=$(basename $0)
-
-PKG_DEB="git make cmake"
-
-install_deps() {
-    echo "$SNAME installing dependencies: $PKG_DEB"
-    apt-get install -y $PKG_DEB
-}
-
-fetch_src() {
-    echo "$SNAME fetching source..."
-    sudo -u $CURRENT_USER git clone https://github.com/proio-org/cpp-proio.git proio-cpp &&
-        cd ./proio-cpp &&
-        git submodule init && 
-        git submodule update
-}
-
-make_install() {
-    echo "$SNAME make install..."
-    sudo -u $CURRENT_USER mkdir build && 
-        cd build && 
-        sudo -u $CURRENT_USER cmake ../ && 
-        sudo -u $CURRENT_USER make -j$(nproc) && 
-        sudo -u $CURRENT_USER make test -j$(nproc) && 
-        make install &&
-        ldconfig
-}
-
-cleanup() {
-    cd $DIR_INIT
-    if ! [ "$1" = "--cleanup" ]; then exit 0; fi
-    echo "cleaning up: $CLEANUP_LIST"
-    rm -rf $CLEANUP_LIST
-}
-
-install_proio_cpp() {
-    install_deps &&
-        fetch_src &&
-        make_install &&
-        cleanup $@
+pkg_list_deb() {
+    LIST=""
+    # find all install-.sh files in current directory
+    for isf in $(ls -1 install-*.sh)
+    do
+        # request all required debian packages
+        i=$(/bin/sh $isf "--PKG_DEB")
+        # append to list
+        LIST="$LIST $i"
+    done
+    # each install file has it's own required packages
+    # filter out duplicates and sort them
+    FLIST=$(echo $LIST | sed "s/\ /\\n/g" | sort -V | uniq)
+    for i in $FLIST
+    do
+        # echo each package
+        echo $i
+    done
 }
 
 for s in "$@"
 do
     case $s in
-        "--PKG_DEB") echo $PKG_DEB; exit 0;;
+        "--DEB") pkg_list_deb;;
     esac
 done
-
-install_proio_cpp $@
 
 

@@ -36,6 +36,7 @@
 CURRENT_USER=${SUDO_USER:-$(whoami)}
 DIR_INIT=$(pwd)
 CLEANUP_LIST=""
+SNAME=$(basename $0)
 
 # OMG!
 PKG_DEB="git make cmake libc6 libgcc1 libmuparser2v5 libpython3.7 libqt5charts5"
@@ -53,12 +54,12 @@ GIT_SRC="https://github.com/albertlauncher/albert.git"
 GIT_SRC_BRANCH="master"
 
 install_deps() {
-    echo "$SNAME installing dependencies..."
+    echo "$SNAME installing dependencies: $PKG_DEB"
     apt-get install -y $PKG_DEB
 }
 
 fetch_src() {
-    echo "fetching source..."
+    echo "$SNAME fetching source..."
     sudo -u $CURRENT_USER mkdir ./albert_build &&
         cd albert_build &&
         CLEANUP_LIST=$(pwd) &&
@@ -76,7 +77,7 @@ git_checkout_latest() {
 }
 
 checkout_latest_ver() {
-    echo "checking out latest release"
+    echo "$SNAME checking out latest version"
     # switch to albert repository
     cd albert &&
         # checkout latest albert release
@@ -88,16 +89,23 @@ checkout_latest_ver() {
 }
 
 make_install() {
-    echo "building..."
+    echo "$SNAME make install..."
     sudo -u $CURRENT_USER cmake ../albert -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release &&
         sudo -u $CURRENT_USER make -j$(nproc) &&
         make install
 }
 
 def_cfg() {
+    echo "$SNAME writing default configuration to /home/$CURRENT_USER/.config/albert/albert.conf"
     ACF="/home/$CURRENT_USER/.config/albert"
     sudo -u $CURRENT_USER mkdir $ACF
     ACF="$ACF/albert.conf"
+    
+    AMOD="arch_wiki, aur, base_converter, binance, bitfinex, coinmarketcap,"
+    AMOD="$AMOD copyq, currency_converter, datetime, fortune, units,"
+    AMOD="$AMOD goldendict, google_translate, ip, kill, locate, python_eval,"
+    AMOD="$AMOD trash, wikipedia, window_switcher, youtube"
+    
     sudo -u $CURRENT_USER echo "[General]" > $ACF
     echo "hotkey=Meta+Space" >> $ACF
     echo "showTray=true" >> $ACF
@@ -127,7 +135,7 @@ def_cfg() {
     echo "" >> $ACF
     echo "[org.albert.extension.python]" >> $ACF
     echo "enabled=true" >> $ACF
-    echo "enabled_modules=arch_wiki, aur, base_converter, binance, bitfinex, coinmarketcap, copyq, currency_converter, datetime, fortune, units, goldendict, google_translate, ip, kill, locate, python_eval, trash, wikipedia, window_switcher, youtube" >> $ACF
+    echo "enabled_modules=$AMOD" >> $ACF
     echo "" >> $ACF
     echo "[org.albert.extension.snippets]" >> $ACF
     echo "enabled=true" >> $ACF
@@ -165,7 +173,7 @@ set_icon() {
 cleanup() {
     cd $DIR_INIT
     if ! [ "$1" = "--cleanup" ]; then return 0; fi
-    echo "cleaning up: $CLEANUP_LIST"
+    echo "$SNAME cleaning up: $CLEANUP_LIST"
     rm -rf $CLEANUP_LIST
 }
 

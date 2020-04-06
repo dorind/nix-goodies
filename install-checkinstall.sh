@@ -36,21 +36,27 @@
 CURRENT_USER=${SUDO_USER:-$(whoami)}
 DIR_INIT=$(pwd)
 CLEANUP_LIST="checkinstall"
+SNAME=$(basename $0)
+
+PKG_DEB="git make gettext dpkg dpkg-dev"
 
 install_deps() {
-    apt-get install -y git make gettext dpkg dpkg-dev
+    echo "$SNAME installing dependencies: $PKG_DEB"
+    apt-get install -y $PKG_DEB
 }
 
 fetch_src() {
+    echo "$SNAME checking out latest version..."
     sudo -u $CURRENT_USER git clone http://checkinstall.izto.org/checkinstall.git checkinstall &&
-    cd ./checkinstall
+        cd ./checkinstall
 }
 
 make_install() {
+    echo "$SNAME make install..."
     sudo -u $CURRENT_USER make &&
-    make install &&
-    checkinstall &&
-    dpkg -i checkinstall_*.deb
+        make install &&
+        checkinstall &&
+        dpkg -i checkinstall_*.deb
 }
 
 cleanup() {
@@ -62,11 +68,18 @@ cleanup() {
 
 install_checkinstall() {
     install_deps &&
-    fetch_src &&
-    make_install
+        fetch_src &&
+        make_install &&
+        cleanup $@
 }
 
-install_checkinstall &&
-cleanup $@
+for s in "$@"
+do
+    case $s in
+        "--PKG_DEB") echo $PKG_DEB; exit 0;;
+    esac
+done
+
+install_checkinstall $@
 
 

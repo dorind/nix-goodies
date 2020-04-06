@@ -29,13 +29,27 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+SNAME=$(basename $0)
+
+PKG_DEB="arc-theme obsidian-icon-theme"
+
 install_deps() {
-    apt-get install -y arc-theme obsidian-icon-theme
+    echo "$SNAME installing dependencies: $PKG_DEB"
+    apt-get install -y $PKG_DEB
 }
 
 update_cache() {
-    gtk-update-icon-cache /usr/share/icons/Obsidian-Aqua-SemiLight/
+    echo "$SNAME updating icon cache, this will take a bit..."
+    find /usr/share/icons/ -type d -name "Obsidian-*" |
+        awk '{ print "icons: "$1; system("gtk-update-icon-cache "$1) }'
 }
+
+for s in "$@"
+do
+    case $s in
+        "--PKG_DEB") echo $PKG_DEB; exit 0;;
+    esac
+done
 
 install_deps &&
     update_cache

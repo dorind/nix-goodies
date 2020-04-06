@@ -36,14 +36,15 @@
 CURRENT_USER=${SUDO_USER:-$(whoami)}
 DIR_INIT=$(pwd)
 CLEANUP_LIST=""
-
 SNAME=$(basename $0)
 GOLANG_URL_DL="https://golang.org/dl/"
 GOLANG_INSTALL_LOCATION="/usr/local"
 
+PKG_DEB="wget"
+
 install_deps() {
-    echo "$SNAME installing dependencies..."
-    apt-get install -y wget
+    echo "$SNAME installing dependencies: $PKG_DEB"
+    apt-get install -y $PKG_DEB
 }
 
 fetch_install() {
@@ -53,10 +54,10 @@ fetch_install() {
     echo "Downloading $GOLANG_VER_LATEST from from $URL_DL"
     # download
     sudo -u $CURRENT_USER wget $URL_DL &&
-    # extract sources
-    echo "$SNAME extracting $GOLANG_VER_LATEST to $GOLANG_INSTALL_LOCATION" &&
-    CLEANUP_LIST="$GOLANG_VER_LATEST" &&
-    tar -C $GOLANG_INSTALL_LOCATION -xzf $GOLANG_VER_LATEST
+        # extract sources
+        echo "$SNAME extracting $GOLANG_VER_LATEST to $GOLANG_INSTALL_LOCATION" &&
+        CLEANUP_LIST="$GOLANG_VER_LATEST" &&
+        tar -C $GOLANG_INSTALL_LOCATION -xzf $GOLANG_VER_LATEST
 }
 
 exports() {
@@ -69,6 +70,7 @@ exports() {
         echo "$SNAME unhandled case, bailing out!"
         exit 1
     fi
+    echo "$SNAME adding golang to your PATH in $SHRC"
     # export paths
     echo "" >> $SHRC
     echo "# golang" >> $SHRC
@@ -88,10 +90,17 @@ cleanup() {
 
 install_golang() {
     install_deps &&
-    fetch_install &&
-    cleanup $@ &&
-    exports
+        fetch_install &&
+        cleanup $@ &&
+        exports
 }
+
+for s in "$@"
+do
+    case $s in
+        "--PKG_DEB") echo $PKG_DEB; exit 0;;
+    esac
+done
 
 install_golang $@
 

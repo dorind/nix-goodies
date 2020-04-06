@@ -36,13 +36,17 @@
 CURRENT_USER=${SUDO_USER:-$(whoami)}
 DIR_INIT=$(pwd)
 CLEANUP_LIST=""
+SNAME=$(basename $0)
 LITEIDE_INSTALL_LOCATION="/usr/local"
 LITEIDE_INSTALL_BIN=""
 ICON_PATH="/usr/share/icons/hicolor/scalable/apps/liteide.svg"
 ICON_REMOTE="https://raw.githubusercontent.com/dorind/nix-goodies/master/res/icons/liteide.svg"
 
+PKG_DEB="wget qt5-default"
+
 install_deps() {
-    apt-get install -y wget qt5-default
+    echo "$SNAME installing dependencies: $PKG_DEB"
+    apt-get install -y $PKG_DEB
 }
 
 fetch_install() {
@@ -50,15 +54,17 @@ fetch_install() {
     URL_DL="https://www.github.com$URL_PATH"
     NAME=$(basename $URL_PATH)
     CLEANUP_LIST="$NAME"
+    echo "$SNAME fetching latest version from $URL_DL"
     sudo -u $CURRENT_USER wget $URL_DL &&
-    tar -C $LITEIDE_INSTALL_LOCATION -xzf $NAME &&
-    LITEIDE_INSTALL_BIN=$LITEIDE_INSTALL_LOCATION/liteide/bin
+        tar -C $LITEIDE_INSTALL_LOCATION -xzf $NAME &&
+        LITEIDE_INSTALL_BIN=$LITEIDE_INSTALL_LOCATION/liteide/bin
 }
 
 setup_app() {
     FDESK="/usr/local/share/applications" &&
-    mkdir -p $FDESK &&
-    FDESK="$FDESK/liteide.desktop"
+        mkdir -p $FDESK &&
+        FDESK="$FDESK/liteide.desktop"
+    echo "$SNAME creating desktop entry $FDESK"
     wget -O $ICON_PATH $ICON_REMOTE || true
     echo "[Desktop Entry]" >> $FDESK
     echo "Name=LiteIDE" >> $FDESK
@@ -82,6 +88,7 @@ exports() {
         echo "$SNAME unhandled case, bailing out!"
         exit 1
     fi
+    echo "$SNAME adding LiteIDE to your PATH in $SHRC"
     # export paths
     echo "" >> $SHRC
     echo "# liteide" >> $SHRC
@@ -101,11 +108,18 @@ cleanup() {
 
 install_liteide() {
     install_deps &&
-    fetch_install &&
-    cleanup $@ &&
-    setup_app &&
-    exports
+        fetch_install &&
+        cleanup $@ &&
+        setup_app &&
+        exports
 }
+
+for s in "$@"
+do
+    case $s in
+        "--PKG_DEB") echo $PKG_DEB; exit 0;;
+    esac
+done
 
 install_liteide $@
 

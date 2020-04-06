@@ -36,6 +36,7 @@
 CURRENT_USER=${SUDO_USER:-$(whoami)}
 DIR_INIT=$(pwd)
 CLEANUP_LIST=""
+SNAME=$(basename $0)
 
 # debian packages
 # python 2
@@ -60,18 +61,18 @@ PKG_DEB="$PKG_DEB beignet-opencl-icd"
 PKG_DEB="$PKG_DEB liblapacke liblapacke-dev libeigen3-dev libopenblas-base libopenblas-dev"
 
 # protobuf
-if [ ! -z "$(ldconfig -p | grep protobuf)" ]; then
-	echo "protobuf found!"
-else
+if [ -z "$(ls -1 /usr/lib/x86_64-linux-gnu/ | grep libprotobuf)" ]; then
+    # protobuf is missing
 	PKG_DEB="$PKG_DEB libprotobuf-dev protobuf-compiler"
 fi
 
 install_deps() {
+    echo "$SNAME installing dependencies: $PKG_DEB"
     apt-get install -y $PKG_DEB
 }
 
 fetch_src() {
-    echo "fetching source..."
+    echo "$SNAME fetching sources..."
     sudo -u $CURRENT_USER mkdir -p ./opencv_build &&
         cd opencv_build &&
         CLEANUP_LIST=$(pwd) &&
@@ -89,7 +90,7 @@ git_checkout_latest() {
 }
 
 checkout_latest_ver() {
-    echo "checking out latest release"
+    echo "$SNAME checking out latest version..."
     # switch to opencv repository
     cd opencv &&
         # checkout latest opencv release
@@ -103,7 +104,7 @@ checkout_latest_ver() {
 }
 
 make_install() {
-    echo "building..."
+    echo "$SNAME make install..."
     sudo -u $CURRENT_USER cmake -D CMAKE_BUILD_TYPE=RELEASE \
         -D CMAKE_INSTALL_PREFIX=/usr/local \
         -D INSTALL_C_EXAMPLES=ON \
@@ -131,6 +132,13 @@ install_opencv() {
         make_install &&
         cleanup $@
 }
+
+for s in "$@"
+do
+    case $s in
+        "--PKG_DEB") echo $PKG_DEB; exit 0;;
+    esac
+done
 
 install_opencv $@
 

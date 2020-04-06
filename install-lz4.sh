@@ -36,17 +36,23 @@
 CURRENT_USER=${SUDO_USER:-$(whoami)}
 DIR_INIT=$(pwd)
 CLEANUP_LIST="lz4"
+SNAME=$(basename $0)
+
+PKG_DEB="build-essential git make cmake"
 
 install_deps() {
-    apt-get install -y build-essential git make cmake
+    echo "$SNAME installing dependencies: $PKG_DEB"
+    apt-get install -y $PKG_DEB
 }
 
 fetch_src() {
+    echo "$SNAME fetching source..."
     sudo -u $CURRENT_USER git clone https://github.com/lz4/lz4.git lz4 && 
-    cd lz4
+        cd lz4
 }
 
 build_install() {
+    echo "$SNAME building and installing..."
     sudo -u $CURRENT_USER make cmake -j$(nproc) &&
     cmake --build contrib/cmake_unofficial/. -- install
 }
@@ -60,11 +66,18 @@ cleanup() {
 
 install_lz4() {
     install_deps &&
-    fetch_src &&
-    build_install
+        fetch_src &&
+        build_install &&
+        cleanup $@
 }
 
-install_lz4 &&
-cleanup $@
+for s in "$@"
+do
+    case $s in
+        "--PKG_DEB") echo $PKG_DEB; exit 0;;
+    esac
+done
+
+install_lz4 $@
 
 

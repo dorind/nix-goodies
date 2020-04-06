@@ -36,9 +36,13 @@
 CURRENT_USER=${SUDO_USER:-$(whoami)}
 DIR_INIT=$(pwd)
 CLEANUP_LIST=""
+SNAME=$(basename $0)
+
+PKG_DEB="git wget autoconf automake libtool curl make g++ unzip zlib1g zlib1g-dev"
 
 install_deps() {
-    apt-get install -y git wget autoconf automake libtool curl make g++ unzip zlib1g zlib1g-dev
+    echo "$SNAME installing dependencies: $PKG_DEB"
+    apt-get install -y $PKG_DEB
 }
 
 fetch_src() {
@@ -46,20 +50,22 @@ fetch_src() {
     URL_DL="https://www.github.com$URL_PATH"
     NAME=$(basename $URL_PATH)
     CLEANUP_LIST="$CLEANUP_LIST $NAME"
+    echo "$SNAME fetching source from $URL_DL"
     sudo -u $CURRENT_USER wget $URL_DL &&
-    sudo -u $CURRENT_USER tar -zxf $NAME &&
-    DIR_NAME=$(basename $(tar -tf $NAME | head -n 1)) &&
-    CLEANUP_LIST="$CLEANUP_LIST $DIR_NAME" &&
-    cd $DIR_NAME
+        sudo -u $CURRENT_USER tar -zxf $NAME &&
+        DIR_NAME=$(basename $(tar -tf $NAME | head -n 1)) &&
+        CLEANUP_LIST="$CLEANUP_LIST $DIR_NAME" &&
+        cd $DIR_NAME
 }
 
 make_install() {
+    echo "$SNAME make install..."
     sudo -u $CURRENT_USER ./autogen.sh &&
-    sudo -u $CURRENT_USER ./configure --with-system-zlib &&
-    sudo -u $CURRENT_USER make -j$(nproc) &&
-    sudo -u $CURRENT_USER make check -j$(nproc) &&
-    make install &&
-    ldconfig
+        sudo -u $CURRENT_USER ./configure --with-system-zlib &&
+        sudo -u $CURRENT_USER make -j$(nproc) &&
+        sudo -u $CURRENT_USER make check -j$(nproc) &&
+        make install &&
+        ldconfig
 }
 
 cleanup() {
@@ -71,11 +77,18 @@ cleanup() {
 
 install_protobuf() {
     install_deps &&
-    fetch_src &&
-    make_install
+        fetch_src &&
+        make_install &&
+        cleanup $@
 }
 
-install_protobuf &&
-cleanup $@
+for s in "$@"
+do
+    case $s in
+        "--PKG_DEB") echo $PKG_DEB; exit 0;;
+    esac
+done
+
+install_protobuf $@
 
 

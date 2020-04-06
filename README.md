@@ -75,6 +75,17 @@ $ ./cfg-xfce4-thunar.sh
 * Tested on Debian 10, should work on any distro
 * Super fast
 
+### install-albert.sh
+download & install latest version of albert from source
+
+```shell
+$ sudo ./install-albert.sh
+```
+
+* Tested on Debian 10
+* Doesn't require user interaction
+* OKish installation speed
+
 ### install-checkinstall.sh
 download & install latest version of checkinstall from source
 
@@ -84,6 +95,17 @@ $ sudo ./install-checkinstall.sh
 
 * Tested on Debian 10
 * Requires minimal user interaction
+* Fast installation
+
+### install-ffmpeg.sh
+download & install latest version of ffmpeg from source
+
+```shell
+$ sudo ./install-ffmpeg.sh
+```
+
+* Tested on Debian 10
+* Doesn't require user interaction
 * Fast installation
 
 ### install-golang.sh
@@ -218,4 +240,33 @@ $ sudo ./mktmpfs.sh load ~/ramdisk_name_saved NEW_NAME
 
 * Tested on Debian 10
 * Prints out only errors or mount location if **new** is invoked with -pp
+
+### pkg-list.sh
+list all packages required by all install scripts, flags:
+
+* `--DEB` list all debian packages
+
+```shell
+$ ./pkg-list.sh --DEB
+```
+
+Count the number of required packages
+
+```shell
+$ ./pkg-list.sh --DEB | wc -l
+```
+
+Simpulate install on Debian based distros
+
+**Note**: there's no sudo!
+
+```shell
+$ apt-get install --dry-run $(./pkg-list.sh --DEB | xargs echo)
+```
+
+Install all packages in one go, grab a coffee!
+
+```shell
+$ sudo apt-get install $(./pkg-list.sh --DEB | xargs echo)
+```
 
