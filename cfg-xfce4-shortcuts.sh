@@ -49,38 +49,34 @@
 # CTRL-ESC              xfce settings manager
 # SHIFT-CTRL-ALT-!      flameshot capture screenshot
 # SHIFT-CTRL-ALT-$      flameshot gui mode
+# PrtScn                flameshot copy to clipboard
 # SHIFT-CTRL-ESC        gnome system monitor
 #
 
 DIR_SS="/home/"$USER"/Pictures/Screenshots"
 mkdir -p $DIR_SS
 
-SHORTCUTS="\
-/xfwm4/custom/<Super>d@show_desktop_key|\
-/xfwm4/custom/<Shift><Super>Down@tile_down_key|\
-/xfwm4/custom/<Shift><Super>Up@tile_up_key|\
-/xfwm4/custom/<Super>1@workspace_1_key|\
-/xfwm4/custom/<Super>2@workspace_2_key|\
-/xfwm4/custom/<Super>3@workspace_3_key|\
-/xfwm4/custom/<Super>4@workspace_4_key|\
-/xfwm4/custom/<Super>Left@tile_left_key|\
-/xfwm4/custom/<Super>Right@tile_right_key|\
-/xfwm4/custom/<Super>Up@maximize_window_key|\
-/commands/custom/<Super>e@thunar|\
-/commands/custom/<Super>t@xfce4-terminal|\
-/commands/custom/<Super>r@xfce4-appfinder|\
-/commands/custom/<Ctrl>Escape@xfce4-settings-manager|\
-/commands/custom/<Shift><Ctrl><Alt>exclam@flameshot full -c -p $DIR_SS|\
-/commands/custom/<Shift><Ctrl><Alt>dollar@flameshot gui|\
-/commands/custom/<Shift><Ctrl>Escape@gnome-system-monitor"
+cfg_xfce_shortcuts() {
+    xfconf-query -n --channel xfce4-keyboard-shortcuts --property "/xfwm4/custom/<Super>d" -t string -s "show_desktop_key"
+    xfconf-query -n --channel xfce4-keyboard-shortcuts --property "/xfwm4/custom/<Shift><Super>Down" -t string -s "tile_down_key"
+    xfconf-query -n --channel xfce4-keyboard-shortcuts --property "/xfwm4/custom/<Shift><Super>Up" -t string -s "tile_up_key"
+    xfconf-query -n --channel xfce4-keyboard-shortcuts --property "/xfwm4/custom/<Super>1" -t string -s "workspace_1_key"
+    xfconf-query -n --channel xfce4-keyboard-shortcuts --property "/xfwm4/custom/<Super>2" -t string -s "workspace_2_key"
+    xfconf-query -n --channel xfce4-keyboard-shortcuts --property "/xfwm4/custom/<Super>3" -t string -s "workspace_3_key"
+    xfconf-query -n --channel xfce4-keyboard-shortcuts --property "/xfwm4/custom/<Super>4" -t string -s "workspace_4_key"
+    xfconf-query -n --channel xfce4-keyboard-shortcuts --property "/xfwm4/custom/<Super>Left" -t string -s "tile_left_key"
+    xfconf-query -n --channel xfce4-keyboard-shortcuts --property "/xfwm4/custom/<Super>Right" -t string -s "tile_right_key"
+    xfconf-query -n --channel xfce4-keyboard-shortcuts --property "/xfwm4/custom/<Super>Up" -t string -s "maximize_window_key"
+    xfconf-query -n --channel xfce4-keyboard-shortcuts --property "/commands/custom/<Super>e" -t string -s "thunar"
+    xfconf-query -n --channel xfce4-keyboard-shortcuts --property "/commands/custom/<Super>t" -t string -s "xfce4-terminal"
+    xfconf-query -n --channel xfce4-keyboard-shortcuts --property "/commands/custom/<Super>r" -t string -s "xfce4-appfinder"
+    xfconf-query -n --channel xfce4-keyboard-shortcuts --property "/commands/custom/<Ctrl>Escape" -t string -s "xfce4-settings-manager"
+    xfconf-query -n --channel xfce4-keyboard-shortcuts --property "/commands/custom/<Shift><Ctrl><Alt>exclam" -t string -s "flameshot full -p '$DIR_SS'"
+    xfconf-query -n --channel xfce4-keyboard-shortcuts --property "/commands/custom/<Shift><Ctrl><Alt>dollar" -t string -s "flameshot gui"
+    xfconf-query -n --channel xfce4-keyboard-shortcuts --property "/commands/custom/Print" -t string -s "flameshot full -c"
+    xfconf-query -n --channel xfce4-keyboard-shortcuts --property "/commands/custom/<Shift><Ctrl>Escape" -t string -s "gnome-system-monitor"
+}
 
-echo $SHORTCUTS | awk '{\
-cnt=split($0, list, "|");\
-for (i = 0; ++i <= cnt;) {\
-    split(list[i], item, "@");\
-    system("xfconf-query --channel xfce4-keyboard-shortcuts --property \""item[1]"\" --reset");\
-    system("xfconf-query --channel xfce4-keyboard-shortcuts --property \""item[1]"\" --create --type string --set \""item[2]"\"");\
-}\
-}'
+cfg_xfce_shortcuts
 
 

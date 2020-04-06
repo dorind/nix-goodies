@@ -49,6 +49,7 @@ $ ./cfg-xfce4-shortcuts.sh
 |CTRL-ESC              |xfce settings manager|
 |SHIFT-CTRL-ALT-!      |flameshot capture screenshot|
 |SHIFT-CTRL-ALT-$      |flameshot gui mode|
+|PRTSCN                |flameshot copy to clipboard|
 |SHIFT-CTRL-ESC        |gnome system monitor|
 
 * Tested on Debian 10, should work on any distro
