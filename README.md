@@ -187,6 +187,51 @@ $ sudo ./install-root-cern.sh
 * Doesn't require user interaction
 * Slow installation, run it and walk away
 
+### install-vim-airline.sh
+download & install latest vim airline plugin
+
+```shell
+$ sudo ./install-vim-airline.sh
+```
+
+* Tested on Debian 10
+* Doesn't require user interaction
+* Very installation
+
+### install-vim-completor.sh
+download & install latest vim completor plugin
+
+```shell
+$ sudo ./install-vim-completor.sh
+```
+
+* Tested on Debian 10
+* Doesn't require user interaction
+* Very installation
+
+### install-vim-fugitive.sh
+download & install latest vim fugitive plugin
+
+```shell
+$ sudo ./install-vim-fugitive.sh
+```
+
+* Tested on Debian 10
+* Doesn't require user interaction
+* Very installation
+
+### install-vim.sh
+download & install latest version of vim from source
+
+```shell
+$ sudo ./install-vim.sh
+```
+
+* With python3, terminal, ruby, perl and lua, native arch
+* Without GUI
+* Tested on Debian 10
+* Doesn't require user interaction
+* Very installation
 
 ### install-xfce4-themes.sh
 download & install **my** prefered themes and icons
