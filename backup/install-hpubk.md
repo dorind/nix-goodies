@@ -3,6 +3,10 @@
 Small shell script, less than 1,000 lines of code with comments(!), that sets
 your system up for automatic backup to a USB storage device when plugged in.
 
+### Quick demo on YouTube
+
+[![](http://img.youtube.com/vi/RuQQP3Q79rA/0.jpg)](http://www.youtube.com/watch?v=RuQQP3Q79rA "HPUBK quick demo")
+
 The only dependency right now is `rsync`, if you don't count `systemd`, therefore
 the script should work pretty much on any linux distribution with minimal
 modifications, if you do so, please drop me a line with your changes so that
