@@ -32,31 +32,26 @@
 MOUNT_POINT="/mnt"
 CONFIG_FILE=".tmpfs"
 
-CURRENT_USER=""
-
-if [ $SUDO_USER ]; then 
-    CURRENT_USER=$SUDO_USER
-else 
-    CURRENT_USER=$(whoami)
-fi
+CURRENT_USER=${SUDO_USER:-$(whoami)}
+SNAME=$(basename $0)
 
 usage() {
     sname=$(basename $0)
 
     echo "usage:"
     echo "example new:"
-    echo "  sudo" $sname "new ramdisk 512M"
+    echo "  sudo $SNAME new ramdisk 512M"
     echo "  or"
-    echo "  sudo" $sname "new ramdisk 1G"
+    echo "  sudo $SNAME new ramdisk 1G"
     echo ""
     echo "example remove:"
-    echo "  sudo" $sname "remove ramdisk"
+    echo "  sudo $SNAME remove ramdisk"
     echo ""
     echo "example save:"
-    echo "  sudo" $sname "save ramdisk ~/ramdisk_name"
+    echo "  sudo $SNAME save ramdisk ~/ramdisk_name"
     echo ""
     echo "example load:"
-    echo "  sudo" $sname "load ~/ramdisk_name ramdisk"
+    echo "  sudo $SNAME load ~/ramdisk_name ramdisk"
 }
 
 tmpfs_new() {
@@ -67,13 +62,13 @@ tmpfs_new() {
     # sanity checks
     # is size correct?
     if ! echo $SIZE | grep -Eq "^[0-9]+[M|G]$" ; then
-        echo "error: invalid size $SIZE! example 512M or 1G"
+        echo "$SNAME error: invalid size $SIZE! example 512M or 1G"
         exit 1
     fi
 
     # create directory in $MOUNT_POINT
     if ! mkdir $MOUNT_POINT/$NAME ; then
-        echo "error: cannot create directory $MOUNT_POINT/$NAME"
+        echo "$SNAME error: cannot create directory $MOUNT_POINT/$NAME"
         exit 1;
     fi
 
@@ -93,13 +88,13 @@ tmpfs_remove() {
     
     # unmount
     if ! umount -l $MOUNT_POINT/$NAME ; then
-        echo "error: cannot unmount $MOUNT_POINT/$NAME"
+        echo "$SNAME error: cannot unmount $MOUNT_POINT/$NAME"
         exit 1
     fi
 
     # rm dir $MOUNT_POINT/$NAME
     if ! rm -rf $MOUNT_POINT/$NAME; then
-        echo "error: cannot remove $MOUNT_POINT/$NAME"
+        echo "$SNAME error: cannot remove $MOUNT_POINT/$NAME"
         exit 1
     fi
 }
@@ -110,7 +105,7 @@ tmpfs_save() {
 
     # create directory
     if ! mkdir -p $SAVE_PATH; then
-        echo "error: cannot create directory $SAVE_PATH, bailing out!"
+        echo "$SNAME error: cannot create directory $SAVE_PATH, bailing out!"
         exit 1
     fi
 
@@ -143,7 +138,7 @@ tmpfs_load() {
     fi
 
     if ! tmpfs_mk $NAME $SIZE ; then
-        echo "error: cannot load $NAME from $LOAD_PATH"
+        echo "$SNAME error: cannot load $NAME from $LOAD_PATH"
         exit 1
     fi
 

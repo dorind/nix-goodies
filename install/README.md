@@ -33,6 +33,17 @@ $ sudo ./install-ffmpeg.sh
 * Doesn't require user interaction
 * Fast installation
 
+### install-flashrom.sh
+download & install latest version of flashrom from source
+
+```shell
+$ sudo ./install-flashrom.sh
+```
+
+* Tested on Debian 10
+* Doesn't require user interaction
+* Fast installation
+
 ### install-golang.sh
 download & install latest version of golang
 
@@ -72,6 +83,17 @@ download & install latest version of opencv and opencv-contrib from source
 
 ```shell
 $ sudo ./install-opencv.sh
+```
+
+* Tested on Debian 10
+* Doesn't require user interaction
+* Slow installation, run it and walk away
+
+### install-openscad.sh
+download & install latest version of OpenSCAD from source
+
+```shell
+$ sudo ./install-openscad.sh
 ```
 
 * Tested on Debian 10

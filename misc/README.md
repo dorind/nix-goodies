@@ -1,3 +1,30 @@
+# miscellaneous scripts
+
+### mkswapfile.sh
+create and remove swapfiles easily
+
+create a swapfile of size equal to amount of ram
+
+```shell
+$ sudo ./mkswapfile.sh new
+```
+
+create a swapfile twice as large as amount of ram
+
+```shell
+$ sudo ./mkswapfile.sh new x2
+```
+
+remove the swapfile
+
+```shell
+$ sudo ./mkswapfile.sh remove
+```
+
+* Tested on Debian 10, should work on most linux distros
+* Fast operations via `fallocate`, falls back to `dd` in case of error which is slower
+* Nobody needs swap until they do
+
 ### mktmpfs.sh
 create, remove, save & load a temporary file system
 
