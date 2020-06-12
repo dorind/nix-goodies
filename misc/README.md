@@ -37,7 +37,7 @@ $ sudo ./mktmpfs.sh new RAMDISK_NAME 512M
 create a 2GiB ramdisk
 
 ```shell
-$ sudo ./mktmpfs.sh new RAMDISK_NAME 512M
+$ sudo ./mktmpfs.sh new RAMDISK_NAME 2G
 ```
 
 remove a ramdisk

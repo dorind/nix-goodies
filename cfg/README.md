@@ -1,3 +1,21 @@
+### firefox lang rm
+remove extra languages, keeps english only
+
+```shell
+$ sudo ./cfg-firefox-lang-rm.sh
+```
+
+* Tested on Debian 10
+
+### libreoffice lang rm
+remove extra languages, keeps english only
+
+```shell
+$ sudo ./cfg-libreoffice-lang-rm.sh
+```
+
+* Tested on Debian 10
+
 ### xfce4 config all
 calls all cfg-xfce4-* scripts one by one
 
