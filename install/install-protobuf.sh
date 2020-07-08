@@ -37,6 +37,7 @@ CURRENT_USER=${SUDO_USER:-$(whoami)}
 DIR_INIT=$(pwd)
 CLEANUP_LIST=""
 SNAME=$(basename $0)
+VERSION=""
 
 PKG_DEB="git wget autoconf automake libtool curl make g++ unzip zlib1g zlib1g-dev"
 
@@ -46,7 +47,11 @@ install_deps() {
 }
 
 fetch_src() {
-    URL_PATH=$(wget -qO- https://github.com/protocolbuffers/protobuf/releases/latest | grep -Eo \"\/protocolbuffers\/protobuf\/releases\/download\/v[0-9]+\.[0-9]+\.[0-9]+\/protobuf\-all\-[0-9]+\.[0-9]+\.[0-9]+\.tar\.gz\" | tr -d '"')
+    if [ ! -z "$VERSION" ]; then
+        URL_PATH="/protocolbuffers/protobuf/releases/download/v$VERSION/protobuf-all-$VERSION.tar.gz";
+    else
+        URL_PATH=$(wget -qO- https://github.com/protocolbuffers/protobuf/releases/latest | grep -Eo \"\/protocolbuffers\/protobuf\/releases\/download\/v[0-9]+\.[0-9]+\.[0-9]+\/protobuf\-all\-[0-9]+\.[0-9]+\.[0-9]+\.tar\.gz\" | tr -d '"')
+    fi
     URL_DL="https://www.github.com$URL_PATH"
     NAME=$(basename $URL_PATH)
     CLEANUP_LIST="$CLEANUP_LIST $NAME"
@@ -86,6 +91,7 @@ for s in "$@"
 do
     case $s in
         "--PKG_DEB") echo $PKG_DEB; exit 0;;
+        "--version="*) VERSION=$(echo $s | grep -Eo "[0-9]+\.[0-9]+\.[0-9]+");;
     esac
 done
 

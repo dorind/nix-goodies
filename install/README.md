@@ -119,6 +119,16 @@ download & install latest version of protobuf
 $ sudo ./install-protobuf.sh
 ```
 
+or a specific version
+
+```shell
+$ sudo ./install-protobuf.sh --version=3.11.1
+```
+
+in the above example we're installing version 3.11.1 from Dec 3, 2019
+
+**note**: version must have the following format XX.YY.ZZ, where XX, YY and ZZ are one or more digits separated by period
+
 * Tested on Debian 10
 * Doesn't require user interaction
 * Slow installation, run it and walk away
