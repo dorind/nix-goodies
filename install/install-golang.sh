@@ -37,7 +37,7 @@ CURRENT_USER=${SUDO_USER:-$(whoami)}
 DIR_INIT=$(pwd)
 CLEANUP_LIST=""
 SNAME=$(basename $0)
-GOLANG_URL_DL="https://golang.org/dl/"
+GOLANG_URL="https://golang.org"
 GOLANG_INSTALL_LOCATION="/usr/local"
 
 PKG_DEB="wget"
@@ -49,7 +49,12 @@ install_deps() {
 
 fetch_install() {
     echo "$SNAME checking for latest golang version"
-    URL_DL=$(wget -qO- https://golang.org/dl/ | grep -Eo \"https*\:*\/\/.*go[0-9]*\.[0-9]*\.[0-9]*\.linux-amd64\.tar\.gz\" | tr -d '"' | head -n 1)
+    URL_DL=$(wget -qO- $GOLANG_URL/dl/ | grep -Eo \"/dl/go[0-9]*\.[0-9]*\.[0-9]*\.linux-amd64\.tar\.gz\" | tr -d '"' | head -n 1)
+    if [ -z "$URL_DL" ]; then
+        echo "$SNAME Error parsing download URL, take a look at fetch_install()"
+        exit 1
+    fi
+    URL_DL=$GOLANG_URL$URL_DL
     GOLANG_VER_LATEST=$(basename $URL_DL)
     echo "Downloading $GOLANG_VER_LATEST from from $URL_DL"
     # download
