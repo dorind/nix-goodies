@@ -78,6 +78,17 @@ $ sudo ./install-lz4.sh
 * Doesn't require user interaction
 * Fast installation
 
+### install-nodejs.sh
+download & install latest version of nodejs
+
+```shell
+$ sudo ./install-nodejs.sh
+```
+
+* Tested on Debian 10
+* Doesn't require user interaction
+* Fast installation
+
 ### install-opencv.sh
 download & install latest version of opencv and opencv-contrib from source
 
