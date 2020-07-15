@@ -34,10 +34,9 @@ CONFIG_FILE=".tmpfs"
 
 CURRENT_USER=${SUDO_USER:-$(whoami)}
 SNAME=$(basename $0)
+INSTALL_LOCATION="/usr/local/bin/mktmpfs"
 
 usage() {
-    sname=$(basename $0)
-
     echo "usage:"
     echo "example new:"
     echo "  sudo $SNAME new ramdisk 512M"
@@ -120,9 +119,9 @@ tmpfs_save() {
 
     # set directory permission
     chown -R $CURRENT_USER:$CURRENT_USER $SAVE_PATH
-
+    DLS=$(ls $MOUNT_POINT/$NAME)
     # avoid copy if directory is empty
-    if ! [ -z $(ls $MOUNT_POINT/$NAME) ]; then
+    if ! [ -z "$DLS" ]; then
         cp -Rp $MOUNT_POINT/$NAME/* $SAVE_PATH
     fi
 }
@@ -137,12 +136,16 @@ tmpfs_load() {
         NAME=$(cat $LOAD_PATH"/$CONFIG_FILE" | grep "NAME" | awk '{ print $2 }')
     fi
 
-    if ! tmpfs_mk $NAME $SIZE ; then
+    if ! tmpfs_new $NAME $SIZE ; then
         echo "$SNAME error: cannot load $NAME from $LOAD_PATH"
         exit 1
     fi
 
     cp -Rp $LOAD_PATH/* $MOUNT_POINT/$NAME
+}
+
+tmpfs_install() {
+    cp $0 $INSTALL_LOCATION || echo "cannot copy to $INSTALL_LOCATION"
 }
 
 case $1 in
@@ -154,6 +157,8 @@ case $1 in
     "save") tmpfs_save $2 $3;;
     # [path] name
     "load") tmpfs_load $2 $3;;
+    # copy this script to $INSTALL_LOCATION
+    "install") tmpfs_install;;
     *) usage; exit 1;;
 esac
 
