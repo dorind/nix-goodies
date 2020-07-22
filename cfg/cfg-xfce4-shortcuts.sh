@@ -53,6 +53,11 @@
 # SHIFT-CTRL-ESC        gnome system monitor
 #
 
+if [ $(id -u) -eq 0 ]; then
+    echo "Please run script without root privileges"
+    exit 1
+fi
+
 DIR_SS="/home/"$USER"/Pictures/Screenshots"
 mkdir -p $DIR_SS
 

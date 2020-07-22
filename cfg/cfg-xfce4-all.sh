@@ -29,15 +29,34 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+SNAME=$(basename $0)
+DIR_INIT=$(pwd)
+SCRIPT=$(realpath $0)
+SCRIPT_PATH=$(dirname $SCRIPT)
+
+cd $SCRIPT_PATH
+
+if [ $(id -u) -eq 0 ]; then
+    echo "$SNAME Please run script without root privileges"
+    exit 1
+fi
+
 for sf in $(ls -1 cfg-xfce4-* | grep -v "\-all.sh")
 do
-    echo "Pimping with $sf..."
+    echo "$SNAME Pimping with $sf..."
     /bin/sh $sf
+    if [ $? -ne 0 ]; then
+        echo "$SNAME ERROR executing $sf bailing out"
+        cd $DIR_INIT
+        exit 1
+    fi
 done
 
 xfce4-panel -r && 
     xfwm4 --replace &
+    
+cd $DIR_INIT
 
-echo "You are pimped!"
+echo "$SNAME You are pimped!"
 
 

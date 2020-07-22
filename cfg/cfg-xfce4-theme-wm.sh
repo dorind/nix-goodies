@@ -29,6 +29,29 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+SNAME=$(basename $0)
+REQ_PKG_DEB="arc-theme obsidian-icon-theme"
+
+if [ $(id -u) -eq 0 ]; then
+    echo "$SNAME Error: Please run script without root privileges"
+    exit 1
+fi
+
+# check if required packages are installed
+MISSING_PKG=""
+for pkg in $REQ_PKG_DEB
+do
+    RESULT=$(dpkg -l | grep "$pkg")
+    if [ -z "$RESULT" ]; then
+        MISSING_PKG="$MISSING_PKG $pkg"
+    fi
+done
+
+if [ ! -z "$MISSING_PKG" ]; then
+    echo "$SNAME Error: Missing required package(s): $MISSING_PKG"
+    exit 1
+fi
+
 cfg_xfce_theme_wm() {
     # set theme
     xfconf-query --channel xsettings --property "/Net/ThemeName" -s "Arc"

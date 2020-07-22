@@ -29,6 +29,11 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+if [ $(id -u) -eq 0 ]; then
+    echo "Please run script without root privileges"
+    exit 1
+fi
+
 CFG_TIMEZONE=$(cat /etc/timezone)
 
 cfg_xfce_plugins() {
