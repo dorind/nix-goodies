@@ -65,7 +65,7 @@ install_deps() {
 
 fetch_src() {
     echo "$SNAME fetching source..."
-    URL_DL=$(wget -qO- https://ffmpeg.org/download.html#releases | grep -Eo https:\/\/ffmpeg\.org\/releases\/ffmpeg\-[0-9]+\.[0-9]+\.[0-9]+\.tar\.bz2) &&
+    URL_DL=https://ffmpeg.org/$(wget -qO- https://ffmpeg.org/download.html#releases | grep -Eo releases\/ffmpeg\-[0-9]+\.[0-9]+\.[0-9]+\.tar\.bz2 | sort -V | tail -n 1) &&
         echo "$SNAME downloading latest version from $URL_DL" &&
         sudo -u $CURRENT_USER mkdir ./ffmpeg_build &&
         cd ffmpeg_build &&
@@ -77,13 +77,14 @@ fetch_src() {
 }
 
 make_install() {
+    #  --enable-avisynth
     echo "$SNAME make install..."
     echo "$SNAME configuring ffmpeg..."
     sudo -u $CURRENT_USER ./configure --prefix=/usr/local \
         --extra-cflags='-march=native' \
         --enable-hardcoded-tables \
         --enable-gpl --enable-version3 --disable-static \
-        --enable-shared --enable-small --enable-avisynth --enable-chromaprint \
+        --enable-shared --enable-small --enable-chromaprint \
         --enable-frei0r --enable-gmp --enable-gnutls --enable-ladspa \
         --enable-libass --enable-libcaca --enable-libcdio \
         --enable-libcodec2 --enable-libfontconfig --enable-libfreetype \
